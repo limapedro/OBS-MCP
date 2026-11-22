@@ -33,6 +33,7 @@ Then overwrite these files in **both** portable copies with that DLL:
 - `core/decklink-captions/decklink-captions.dll`
 - `core/decklink-output-ui/decklink-output-ui.dll`
 - `obs-plugins/64bit/multi-source-record.dll`
+- `obs-plugins/64bit/obs-shaderfilter.dll`
 
 The stub exports `obs_module_set_pointer`, `obs_module_ver` and
 `obs_module_load` (returning success). Result: OBS starts with no modal

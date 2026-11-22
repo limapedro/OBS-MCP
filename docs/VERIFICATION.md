@@ -15,6 +15,11 @@ ALL OBS-MCP TESTS PASSED
 build_exit=0
 ```
 
+GitHub Actions CI (`.github/workflows/ci.yml`) is green on `windows-latest`,
+`ubuntu-latest` and `macos-latest`, with MSVC `/W4 /WX` and
+`cc -std=c11 -Wall -Wextra -Werror` respectively
+(run 44992322175, conclusion `success`).
+
 ## MCP protocol smoke test
 
 Requests: `initialize`, `notifications/initialized`, `tools/list`,
