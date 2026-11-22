@@ -42,6 +42,7 @@ stderr. Send one JSON-RPC request per line on stdin, e.g.:
 - [docs/OBS-WEBSOCKET.md](docs/OBS-WEBSOCKET.md) — OBS v5 API usage
 - [docs/SETUP.md](docs/SETUP.md) — portable OBS setup, plugin cleanup, WebSocket config
 - [docs/VERIFICATION.md](docs/VERIFICATION.md) — recorded build, MCP and live OBS evidence
+- [docs/WORKFLOW.md](docs/WORKFLOW.md) — 1440p gaming PC → 1080p streaming PC scenario
 - [CONTRIBUTING.md](CONTRIBUTING.md) — build/test conventions
 
 ## License

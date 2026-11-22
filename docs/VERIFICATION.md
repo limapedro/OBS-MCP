@@ -60,6 +60,15 @@ terminated receiver
 This demonstrates process control, real OBS API access, CPU/memory sampling,
 log inspection and cleanup through a single MCP session.
 
+## WebSocket client fix
+
+An early C client did not consume OBS's `Identified` reply (op 2) after
+`Identify`, which made larger replies such as `GetStats` fail with "response
+frame missing". A Python `websocket-client` probe confirmed OBS answered
+`GetStats` correctly (op 7, 435 bytes). After consuming the reply and handling
+interleaved control frames, the C client returns the full `GetStats` response:
+60.0 fps, 0 skipped render frames, CPU and memory fields populated.
+
 ## Throughput
 
 Piping 1000 `ping` JSON-RPC requests through the server produced 1000 response

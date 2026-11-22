@@ -53,36 +53,54 @@ static int send_all(ws_socket s, const unsigned char *buf, size_t len)
     return 0;
 }
 
-/* Read one server text frame (server frames are unmasked). */
+static int send_frame(ws_socket s, const char *text, size_t len);
+
+/* Read the next server *text* frame, skipping interleaved events/control
+ * frames. OBS sends event messages at any time; a RequestResponse must not be
+ * confused with them or with a keepalive ping. */
 static int read_frame(ws_socket s, char **out, size_t *out_len)
 {
-    unsigned char head[2];
-    unsigned char ext[8];
-    unsigned long long len;
-    char *payload;
+    for (;;) {
+        unsigned char head[2];
+        unsigned char ext[8];
+        unsigned long long len = 0;
+        int opcode;
+        char *payload;
+        int i;
 
-    if (read_exact(s, head, 2)) return 1;
-    if ((head[0] & 0x0F) != 1) return 2; /* only text frames expected */
-    len = head[1] & 0x7Fu;
-    if (len == 126) {
-        if (read_exact(s, ext, 2)) return 1;
-        len = ((unsigned long long)ext[0] << 8) | ext[1];
-    } else if (len == 127) {
-        if (read_exact(s, ext, 8)) return 1;
-        len = 0;
-        for (int i = 0; i < 8; ++i) len = (len << 8) | ext[i];
+        if (read_exact(s, head, 2)) return 1;
+        opcode = head[0] & 0x0F;
+        len = head[1] & 0x7Fu;
+        if (len == 126) {
+            if (read_exact(s, ext, 2)) return 1;
+            len = ((unsigned long long)ext[0] << 8) | ext[1];
+        } else if (len == 127) {
+            if (read_exact(s, ext, 8)) return 1;
+            for (i = 0; i < 8; ++i) len = (len << 8) | ext[i];
+        }
+        if (len > WS_MAX_FRAME) return 3;
+        if (opcode == 8) return 2; /* server closed the connection */
+
+        payload = (char *)malloc((size_t)len + 1u);
+        if (!payload) return 4;
+        if (len && read_exact(s, (unsigned char *)payload, (size_t)len)) {
+            free(payload);
+            return 1;
+        }
+        if (opcode == 9) { /* ping -> pong */
+            send_frame(s, payload, (size_t)len);
+            free(payload);
+            continue;
+        }
+        if (opcode != 1) { /* event or pong: ignore */
+            free(payload);
+            continue;
+        }
+        payload[len] = '\0';
+        *out = payload;
+        *out_len = (size_t)len;
+        return 0;
     }
-    if (len > WS_MAX_FRAME) return 3;
-    payload = (char *)malloc((size_t)len + 1u);
-    if (!payload) return 4;
-    if (len && read_exact(s, (unsigned char *)payload, (size_t)len)) {
-        free(payload);
-        return 1;
-    }
-    payload[len] = '\0';
-    *out = payload;
-    *out_len = (size_t)len;
-    return 0;
 }
 
 /* Send one masked client text frame. */
@@ -188,6 +206,14 @@ int obsmcp_ws_call(const char *host, unsigned port, const char *request_json,
         snprintf(err, err_cap, "Identify send failed");
         goto done;
     }
+    /* Consume the Identified reply (op 2) before issuing requests. Leaving
+     * it unread makes OBS drop some larger replies such as GetStats. */
+    if (read_frame(s, &frame, &frame_len) != 0) {
+        snprintf(err, err_cap, "Identified reply missing");
+        goto done;
+    }
+    free(frame);
+    frame = NULL;
 
     request = cJSON_Parse(request_json);
     if (!request) {
