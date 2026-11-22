@@ -274,6 +274,11 @@ int obsmcp_cpu_stats(const obsmcp_instance_t *inst, unsigned window_ms,
     }
     return 0;
 #else
+    (void)inst;
+    (void)window_ms;
+    (void)cpu_seconds;
+    (void)cpu_percent;
+    (void)ws_mb;
     snprintf(err, err_cap, "CPU sampling is not supported on this platform");
     return 1;
 #endif
@@ -284,7 +289,7 @@ int obsmcp_log_tail(const obsmcp_instance_t *inst, unsigned lines,
 {
     DIR *dir = opendir(inst->log_dir);
     struct dirent *entry;
-    char newest[OBSMCP_MAX_PATH] = "";
+    char newest[OBSMCP_MAX_PATH + 64] = "";
     time_t newest_time = 0;
     struct stat st;
     FILE *file;
@@ -298,7 +303,7 @@ int obsmcp_log_tail(const obsmcp_instance_t *inst, unsigned lines,
         return 1;
     }
     while ((entry = readdir(dir))) {
-        char full[OBSMCP_MAX_PATH];
+        char full[OBSMCP_MAX_PATH + 64];
         size_t n = strlen(entry->d_name);
         if (n < 4 || strcmp(entry->d_name + n - 4, ".txt") != 0) continue;
         snprintf(full, sizeof(full), "%s/%s", inst->log_dir, entry->d_name);
