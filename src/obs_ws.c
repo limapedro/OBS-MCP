@@ -1,4 +1,7 @@
 /* Minimal RFC6455 text-frame client for OBS WebSocket v5. MIT licensed. */
+#ifndef _WIN32
+#define _POSIX_C_SOURCE 200809L
+#endif
 #if defined(_MSC_VER)
 #define _CRT_SECURE_NO_WARNINGS
 #endif

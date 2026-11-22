@@ -1,4 +1,7 @@
 /* OBS-MCP typed TOML config loader. MIT licensed. */
+#ifndef _WIN32
+#define _POSIX_C_SOURCE 200809L
+#endif
 #if defined(_MSC_VER)
 #define _CRT_SECURE_NO_WARNINGS
 #endif
@@ -22,7 +25,11 @@ static char *trim(char *text)
 
 static void set_str(char *dst, size_t cap, const char *value)
 {
-    snprintf(dst, cap, "%s", value);
+    size_t n = strlen(value);
+    if (cap == 0) return;
+    if (n >= cap) n = cap - 1;
+    memcpy(dst, value, n);
+    dst[n] = '\0';
 }
 
 void obsmcp_config_init(obsmcp_config_t *config)
