@@ -60,6 +60,12 @@ terminated receiver
 This demonstrates process control, real OBS API access, CPU/memory sampling,
 log inspection and cleanup through a single MCP session.
 
+## Throughput
+
+Piping 1000 `ping` JSON-RPC requests through the server produced 1000 response
+lines in 174.9 ms (~5,700 requests/s) on the dev machine; release binary size
+is 234 KB. This is the "small and fast" claim: one C process, no runtime.
+
 ## Plugin dialog fix
 
 Before the no-op module stub, OBS raised a `Plugin Errors` dialog on every
