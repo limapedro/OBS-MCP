@@ -1,0 +1,23 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build-test:
+    name: build and test (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build and test with MSVC
+        if: runner.os == 'Windows'
+        run: cmd /c scripts\build.bat
+      - name: Build and test with cc
+        if: runner.os != 'Windows'
+        run: sh scripts/build.sh

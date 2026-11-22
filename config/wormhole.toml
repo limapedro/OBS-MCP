@@ -1,0 +1,27 @@
+# OBS-MCP configuration for the two Wormhole portable OBS test instances.
+# Paths use forward slashes so the same file works on Windows and POSIX.
+
+[sender]
+name = "sender"
+obs_exe = "E:/__PROJECTS__/Wormhole/third_party/obs-portable/sender/bin/64bit/obs64.exe"
+working_dir = "E:/__PROJECTS__/Wormhole/third_party/obs-portable/sender/bin/64bit"
+profile = "Wormhole"
+collection = "WormholeSender"
+ws_host = "127.0.0.1"
+ws_port = 4455
+log_dir = "E:/__PROJECTS__/Wormhole/third_party/obs-portable/sender/config/obs-studio/logs"
+
+[receiver]
+name = "receiver"
+obs_exe = "E:/__PROJECTS__/Wormhole/third_party/obs-portable/receiver/bin/64bit/obs64.exe"
+working_dir = "E:/__PROJECTS__/Wormhole/third_party/obs-portable/receiver/bin/64bit"
+profile = "Wormhole"
+collection = "WormholeReceiver"
+ws_host = "127.0.0.1"
+ws_port = 4456
+log_dir = "E:/__PROJECTS__/Wormhole/third_party/obs-portable/receiver/config/obs-studio/logs"
+
+[harness]
+exe = "E:/__PROJECTS__/Wormhole/build/c/wormhole-harness.exe"
+config = "E:/__PROJECTS__/Wormhole/harness/config/example.toml"
+capture_config = "E:/__PROJECTS__/Wormhole/harness/config/obs-proxy.toml"

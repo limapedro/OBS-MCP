@@ -1,0 +1,29 @@
+# OBS-MCP typed configuration. Only --config and --help are CLI flags.
+
+[sender]
+name = "sender"
+obs_exe = "third_party/obs-portable/sender/bin/64bit/obs64.exe"
+working_dir = "third_party/obs-portable/sender/bin/64bit"
+profile = "Wormhole"
+collection = "WormholeSender"
+ws_host = "127.0.0.1"
+ws_port = 4455
+log_dir = "third_party/obs-portable/sender/config/obs-studio/logs"
+
+[receiver]
+name = "receiver"
+obs_exe = "third_party/obs-portable/receiver/bin/64bit/obs64.exe"
+working_dir = "third_party/obs-portable/receiver/bin/64bit"
+profile = "Wormhole"
+collection = "WormholeReceiver"
+ws_host = "127.0.0.1"
+ws_port = 4456
+log_dir = "third_party/obs-portable/receiver/config/obs-studio/logs"
+
+[harness]
+exe = "build/wormhole-harness.exe"
+config = "harness/config/example.toml"
+capture_config = "harness/config/obs-proxy.toml"
+
+[general]
+max_request_bytes = 1048576
